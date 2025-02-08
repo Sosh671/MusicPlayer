@@ -1,4 +1,4 @@
-package com.example.musicplayer.presentation.component
+package com.example.musicplayer.presentation.screens.main.component
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -28,6 +28,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import com.example.musicplayer.presentation.model.PagerScreen
 import com.example.musicplayer.presentation.theme.MusicPlayerTheme
 import kotlinx.coroutines.launch
 

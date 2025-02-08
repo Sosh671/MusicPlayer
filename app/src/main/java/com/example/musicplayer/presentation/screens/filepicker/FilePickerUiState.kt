@@ -1,7 +1,6 @@
-package com.example.musicplayer.presentation.filepicker
+package com.example.musicplayer.presentation.screens.filepicker
 
 import java.io.File
-
 
 sealed interface FilePickerUiState {
     data class Success(val files: List<File>) : FilePickerUiState

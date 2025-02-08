@@ -1,6 +1,6 @@
-package com.example.musicplayer.data
+package com.example.musicplayer.data.repository
 
-import com.example.musicplayer.domain.FileRepository
+import com.example.musicplayer.domain.repository.FileRepository
 import java.io.File
 
 class FileRepositoryImpl : FileRepository {

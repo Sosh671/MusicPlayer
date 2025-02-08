@@ -1,4 +1,4 @@
-package com.example.musicplayer.presentation.component
+package com.example.musicplayer.presentation.model
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.vector.ImageVector

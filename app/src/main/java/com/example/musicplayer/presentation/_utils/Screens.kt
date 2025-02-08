@@ -7,6 +7,7 @@ private const val ROUTE_PLAYER = "player/{itemId}"
 private const val ROUTE_PLAYER_ITEM = "player/"
 private const val ROUTE_QUEUE = "queue"
 
+// todo remove if unused
 @Serializable
 sealed class Screens(val route: String) {
 

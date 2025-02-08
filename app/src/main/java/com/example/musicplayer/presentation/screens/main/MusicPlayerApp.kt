@@ -1,4 +1,4 @@
-package com.example.musicplayer.presentation
+package com.example.musicplayer.presentation.screens.main
 
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.material.icons.Icons
@@ -22,11 +22,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.musicplayer.presentation._utils.Screens
-import com.example.musicplayer.presentation.component.MusicPlayerPager
-import com.example.musicplayer.presentation.component.PagerScreen
-import com.example.musicplayer.presentation.filepicker.FilePickerScreen
-import com.example.musicplayer.presentation.player.PlayerScreen
-import com.example.musicplayer.presentation.queue.QueueScreen
+import com.example.musicplayer.presentation.screens.main.component.MusicPlayerPager
+import com.example.musicplayer.presentation.model.PagerScreen
+import com.example.musicplayer.presentation.screens.filepicker.FilePickerScreen
+import com.example.musicplayer.presentation.screens.player.PlayerScreen
+import com.example.musicplayer.presentation.screens.queue.QueueScreen
 import com.example.musicplayer.presentation.theme.MusicPlayerTheme
 
 @Composable
@@ -54,6 +54,7 @@ fun MusicPlayerApp() {
     }
 }
 
+// todo remove if unused
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun MusicPlayerNavHost(navController: NavHostController) {

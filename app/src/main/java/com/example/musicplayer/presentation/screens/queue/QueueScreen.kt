@@ -1,4 +1,4 @@
-package com.example.musicplayer.presentation.queue
+package com.example.musicplayer.presentation.screens.queue
 
 import androidx.compose.runtime.Composable
 

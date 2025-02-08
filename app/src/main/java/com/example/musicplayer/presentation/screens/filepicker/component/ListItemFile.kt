@@ -1,4 +1,4 @@
-package com.example.musicplayer.presentation.filepicker.component
+package com.example.musicplayer.presentation.screens.filepicker.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable

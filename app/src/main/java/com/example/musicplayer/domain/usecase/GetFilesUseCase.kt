@@ -1,5 +1,6 @@
-package com.example.musicplayer.domain
+package com.example.musicplayer.domain.usecase
 
+import com.example.musicplayer.domain.repository.FileRepository
 import java.io.File
 
 class GetFilesUseCase(private val fileRepository: FileRepository) {

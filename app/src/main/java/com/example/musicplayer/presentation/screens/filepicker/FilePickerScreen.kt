@@ -1,4 +1,4 @@
-package com.example.musicplayer.presentation.filepicker
+package com.example.musicplayer.presentation.screens.filepicker
 
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -20,8 +20,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.musicplayer.presentation.filepicker.component.ListItemDirectory
-import com.example.musicplayer.presentation.filepicker.component.ListItemFile
+import com.example.musicplayer.presentation.screens.filepicker.component.ListItemDirectory
+import com.example.musicplayer.presentation.screens.filepicker.component.ListItemFile
 import com.example.musicplayer.presentation.theme.MusicPlayerTheme
 import org.koin.androidx.compose.koinViewModel
 import java.io.File
@@ -56,6 +56,7 @@ fun FilePickerScreen(viewModel: FilePickerViewModel = koinViewModel()) {
     }
 }
 
+// todo test
 @Composable
 private fun Empty() {
     Text("No files found")
