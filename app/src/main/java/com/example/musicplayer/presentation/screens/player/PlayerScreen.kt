@@ -1,8 +1,6 @@
 package com.example.musicplayer.presentation.screens.player
 
 import android.content.res.Configuration
-import android.net.Uri
-import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
@@ -17,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MusicNote
 import androidx.compose.material.icons.rounded.Forward5
 import androidx.compose.material.icons.rounded.Replay5
 import androidx.compose.material.icons.rounded.SkipNext
@@ -30,22 +27,25 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.musicplayer.R
-import com.example.musicplayer.data.model.Song
+import com.example.musicplayer.domain.model.Song
+import com.example.musicplayer.presentation._utils.toBitmap
 import com.example.musicplayer.presentation._utils.toTime
 import com.example.musicplayer.presentation.model.SongEvent
 import com.example.musicplayer.presentation.screens.player.component.AnimatedVinyl
@@ -106,21 +106,16 @@ fun SongScreenBody(
     totalDuration: Long,
     onEvent: (SongEvent) -> Unit
 ) {
-    // todo replace with album cover art and generic image
-    val imagePainter = rememberVectorPainter(Icons.Outlined.MusicNote)
+    val bitmap = remember { song.albumCover?.toBitmap() }
     val iconResId =
         if (isSongPlaying) R.drawable.ic_round_pause
         else R.drawable.ic_round_play
 
-    // todo make pretty colors
+    // todo remove dark mode
     val gradientColors = if (isSystemInDarkTheme()) {
-        listOf(
-            Color.Transparent, MaterialTheme.colorScheme.background
-        )
+        listOf(Color.Transparent, MaterialTheme.colorScheme.background)
     } else {
-        listOf(
-            MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.background
-        )
+        listOf(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.background)
     }
 
     val sliderColors = if (isSystemInDarkTheme()) {
@@ -138,6 +133,7 @@ fun SongScreenBody(
             alpha = ProgressIndicatorDefaults.IndicatorBackgroundOpacity
         ),
     )
+    val defaultSubtitle = stringResource(R.string.unknown_artist)
 
     Box(
         modifier = Modifier
@@ -151,7 +147,7 @@ fun SongScreenBody(
     ) {
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
             Box(modifier = Modifier.padding(vertical = 32.dp)) {
-                AnimatedVinyl(painter = imagePainter, isSongPlaying = isSongPlaying)
+                AnimatedVinyl(isSongPlaying = isSongPlaying, bitmap = bitmap?.asImageBitmap())
             }
 
             Text(
@@ -163,7 +159,7 @@ fun SongScreenBody(
             )
 
             Text(
-                text = song.subtitle,
+                text = song.subtitle ?: defaultSubtitle,
                 style = MaterialTheme.typography.bodySmall,
                 color = MaterialTheme.colorScheme.onBackground,
                 maxLines = 1,
@@ -261,7 +257,7 @@ fun SongScreenBody(
 @Preview(uiMode = Configuration.UI_MODE_NIGHT_YES)
 @Composable
 private fun PreviewMusicPlayerScreenDark() {
-    val song = Song("Title", "Subtitle", Uri.EMPTY)
+    val song = Song("Title", "Subtitle", 0L, byteArrayOf())
     MusicPlayerTheme {
         Surface {
             SongScreenBody(
@@ -278,7 +274,7 @@ private fun PreviewMusicPlayerScreenDark() {
 @Preview
 @Composable
 private fun PreviewMusicPlayerScreen() {
-    val song = Song("Title", "Subtitle", Uri.EMPTY)
+    val song = Song("Title", "Subtitle", 0L, byteArrayOf())
     MusicPlayerTheme {
         Surface {
             SongScreenBody(

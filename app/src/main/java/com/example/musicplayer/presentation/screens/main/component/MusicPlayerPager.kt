@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
@@ -33,9 +34,12 @@ import com.example.musicplayer.presentation.theme.MusicPlayerTheme
 import kotlinx.coroutines.launch
 
 @Composable
-fun MusicPlayerPager(paddings: PaddingValues, pages: List<PagerScreen>) {
+fun MusicPlayerPager(
+    pagerState: PagerState,
+    paddings: PaddingValues,
+    pages: List<PagerScreen>,
+) {
     val scope = rememberCoroutineScope()
-    val pagerState = rememberPagerState(pageCount = { pages.size })
     val selectedTabIndex = remember { derivedStateOf { pagerState.currentPage } }
 
     Column(
@@ -91,6 +95,7 @@ fun PreviewMusicPlayerPager() {
     MusicPlayerTheme {
         Surface {
             MusicPlayerPager(
+                pagerState = rememberPagerState { 3 },
                 paddings = PaddingValues(),
                 pages = listOf(
                     PagerScreen(

@@ -1,6 +1,6 @@
 package com.example.musicplayer.presentation.screens.player
 
-import com.example.musicplayer.data.model.Song
+import com.example.musicplayer.domain.model.Song
 
 sealed interface PlayerUiState {
     data class Success(

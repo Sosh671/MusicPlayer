@@ -5,7 +5,7 @@ import java.io.File
 
 class FileRepositoryImpl : FileRepository {
 
-    private val supportedExtensions = listOf("mp3", "flac", "wav", "mp4")
+    private val supportedExtensions = listOf("mp3", "flac", "wav", "m4a")
 
     override fun getFiles(currentPath: File): List<File> {
         return currentPath.listFiles()?.filter {

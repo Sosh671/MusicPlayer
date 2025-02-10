@@ -1,6 +1,7 @@
 package com.example.musicplayer.presentation.screens.main
 
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Person
@@ -15,6 +16,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.input.pointer.pointerInput
@@ -22,22 +24,32 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.example.musicplayer.presentation._utils.Screens
-import com.example.musicplayer.presentation.screens.main.component.MusicPlayerPager
 import com.example.musicplayer.presentation.model.PagerScreen
 import com.example.musicplayer.presentation.screens.filepicker.FilePickerScreen
+import com.example.musicplayer.presentation.screens.main.component.MusicPlayerPager
 import com.example.musicplayer.presentation.screens.player.PlayerScreen
 import com.example.musicplayer.presentation.screens.queue.QueueScreen
 import com.example.musicplayer.presentation.theme.MusicPlayerTheme
+import kotlinx.coroutines.launch
 
 @Composable
 fun MusicPlayerApp() {
 //    val navController = rememberNavController()
 //    MusicPlayerNavHost(navController)
+    val scope = rememberCoroutineScope()
+    val pagerState = rememberPagerState(pageCount = { 3 })
     val pagerScreens = listOf(
         PagerScreen(
             unselectedIcon = Icons.Outlined.ShoppingCart,
             selectedIcon = Icons.Filled.ShoppingCart,
-            screenContent = { FilePickerScreen() }),
+            screenContent = {
+                FilePickerScreen {
+                    scope.launch {
+                        // Navigate to the player screen
+                        pagerState.animateScrollToPage(1)
+                    }
+                }
+            }),
         PagerScreen(
             unselectedIcon = Icons.Outlined.FavoriteBorder,
             selectedIcon = Icons.Filled.Favorite,
@@ -49,7 +61,7 @@ fun MusicPlayerApp() {
     )
     MusicPlayerTheme {
         Scaffold { innerPadding ->
-            MusicPlayerPager(innerPadding, pagerScreens)
+            MusicPlayerPager(pagerState, innerPadding, pagerScreens)
         }
     }
 }
@@ -78,15 +90,9 @@ private fun MusicPlayerNavHost(navController: NavHostController) {
                 val filePicker = Screens.FilePicker
                 val player = Screens.Player
                 val queue = Screens.Queue
-                composable(filePicker.route) {
-                    FilePickerScreen()
-                }
-                composable(player.route) {
-
-                }
-                composable(queue.route) {
-
-                }
+                composable(filePicker.route) {}
+                composable(player.route) {}
+                composable(queue.route) {}
             }
         }
     }

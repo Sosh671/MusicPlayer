@@ -11,6 +11,8 @@ import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.core.content.ContextCompat
 import com.example.musicplayer.presentation.screens.main.MusicPlayerApp
+import com.example.musicplayer.presentation.screens.player.PlayerSharedViewModel
+import org.koin.androidx.viewmodel.ext.android.viewModel
 
 class MainActivity : ComponentActivity() {
 
@@ -21,6 +23,7 @@ class MainActivity : ComponentActivity() {
                 requestStoragePermission()
             }
         }
+    private val sharedViewModel by viewModel<PlayerSharedViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,11 +40,9 @@ class MainActivity : ComponentActivity() {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
             ContextCompat.checkSelfPermission(this, Manifest.permission.READ_MEDIA_AUDIO) ==
                     PackageManager.PERMISSION_GRANTED
-
         } else {
             ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE) ==
                     PackageManager.PERMISSION_GRANTED
-
         }
 
     private fun requestStoragePermission() {
@@ -50,5 +51,10 @@ class MainActivity : ComponentActivity() {
         } else {
             requestPermissionLauncher.launch(Manifest.permission.READ_EXTERNAL_STORAGE)
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        sharedViewModel.freePlaybackResources()
     }
 }

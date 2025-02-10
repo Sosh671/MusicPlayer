@@ -27,9 +27,7 @@ private data class FilePickerViewModelState(
     }
 }
 
-class FilePickerViewModel(
-    private val getFilesUseCase: GetFilesUseCase,
-) : ViewModel() {
+class FilePickerViewModel(private val getFilesUseCase: GetFilesUseCase) : ViewModel() {
 
     private val viewModelState = MutableStateFlow(
         FilePickerViewModelState()
@@ -62,7 +60,6 @@ class FilePickerViewModel(
         if (file.isDirectory) {
             changeDirectory(file)
         }
-        // todo select file use case
     }
 
     private fun changeDirectory(directory: File) {

@@ -20,15 +20,21 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.musicplayer.presentation.model.SongEvent
 import com.example.musicplayer.presentation.screens.filepicker.component.ListItemDirectory
 import com.example.musicplayer.presentation.screens.filepicker.component.ListItemFile
+import com.example.musicplayer.presentation.screens.player.PlayerSharedViewModel
 import com.example.musicplayer.presentation.theme.MusicPlayerTheme
 import org.koin.androidx.compose.koinViewModel
 import java.io.File
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun FilePickerScreen(viewModel: FilePickerViewModel = koinViewModel()) {
+fun FilePickerScreen(
+    viewModel: FilePickerViewModel = koinViewModel(),
+    sharedViewModel: PlayerSharedViewModel = koinViewModel(),
+    onSongSelected: (File) -> Unit
+) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
 
@@ -50,6 +56,10 @@ fun FilePickerScreen(viewModel: FilePickerViewModel = koinViewModel()) {
                 val filesInDirectory = (uiState as FilePickerUiState.Success).files
                 FilePickerList(filesInDirectory, listState) { file ->
                     viewModel.selectFile(file)
+                    if (file.isFile) {
+                        onSongSelected(file)
+                        sharedViewModel.onEvent(SongEvent.PlaySong(file))
+                    }
                 }
             }
         }

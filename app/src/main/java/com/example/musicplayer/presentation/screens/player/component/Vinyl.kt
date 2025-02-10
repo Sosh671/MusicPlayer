@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.MusicNote
+import androidx.compose.material.icons.rounded.PlayArrow
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -25,7 +25,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
-import androidx.compose.ui.graphics.painter.Painter
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
@@ -33,8 +33,14 @@ import com.example.musicplayer.R
 import com.example.musicplayer.presentation.theme.MusicPlayerTheme
 import com.example.musicplayer.presentation.theme.roundedShape
 
+private const val ANIMATION_PLAYING_DURATION = 7000
+private const val ANIMATION_SETTLING_DURATION = 2000
+
 @Composable
-fun AnimatedVinyl(modifier: Modifier = Modifier, isSongPlaying: Boolean = true, painter: Painter) {
+fun AnimatedVinyl(
+    isSongPlaying: Boolean = true,
+    bitmap: ImageBitmap? = null
+) {
     var currentRotation by remember {
         mutableFloatStateOf(0f)
     }
@@ -46,8 +52,13 @@ fun AnimatedVinyl(modifier: Modifier = Modifier, isSongPlaying: Boolean = true, 
     LaunchedEffect(isSongPlaying) {
         if (isSongPlaying) {
             rotation.animateTo(
-                targetValue = currentRotation + 360f, animationSpec = infiniteRepeatable(
-                    animation = tween(3000, easing = LinearEasing), repeatMode = RepeatMode.Restart
+                targetValue = currentRotation + 360f,
+                animationSpec = infiniteRepeatable(
+                    animation = tween(
+                        durationMillis = ANIMATION_PLAYING_DURATION,
+                        easing = LinearEasing
+                    ),
+                    repeatMode = RepeatMode.Restart
                 )
             ) {
                 currentRotation = value
@@ -55,8 +66,10 @@ fun AnimatedVinyl(modifier: Modifier = Modifier, isSongPlaying: Boolean = true, 
         } else {
             if (currentRotation > 0f) {
                 rotation.animateTo(
-                    targetValue = currentRotation + 50, animationSpec = tween(
-                        1250, easing = LinearOutSlowInEasing
+                    targetValue = currentRotation + 50,
+                    animationSpec = tween(
+                        durationMillis = ANIMATION_SETTLING_DURATION,
+                        easing = LinearOutSlowInEasing
                     )
                 ) {
                     currentRotation = value
@@ -65,12 +78,14 @@ fun AnimatedVinyl(modifier: Modifier = Modifier, isSongPlaying: Boolean = true, 
         }
     }
 
-    Vinyl(modifier = modifier, painter = painter, rotationDegrees = rotation.value)
+    Vinyl(bitmap = bitmap, rotationDegrees = rotation.value)
 }
 
 @Composable
 private fun Vinyl(
-    modifier: Modifier = Modifier, rotationDegrees: Float = 0f, painter: Painter
+    modifier: Modifier = Modifier,
+    rotationDegrees: Float = 0f,
+    bitmap: ImageBitmap? = null
 ) {
     Box(
         modifier = modifier
@@ -87,17 +102,30 @@ private fun Vinyl(
         )
 
         // Vinyl song cover
-        Image(
-            modifier = Modifier
-                .fillMaxSize(0.5f)
-                .rotate(rotationDegrees)
-                .aspectRatio(1.0f)
-                .align(Alignment.Center)
-                .clip(roundedShape),
-            painter = painter,
-            colorFilter = ColorFilter.tint(Color.White),
-            contentDescription = "Song cover"
-        )
+        if (bitmap == null) {
+            val imagePainter = rememberVectorPainter(Icons.Rounded.PlayArrow)
+            Image(
+                modifier = Modifier
+                    .fillMaxSize(0.6f)
+                    .aspectRatio(1.0f)
+                    .align(Alignment.Center)
+                    .clip(roundedShape),
+                painter = imagePainter,
+                colorFilter = ColorFilter.tint(Color.White),
+                contentDescription = "Song cover"
+            )
+        } else {
+            Image(
+                modifier = Modifier
+                    .fillMaxSize(0.6f)
+                    .rotate(rotationDegrees)
+                    .aspectRatio(1.0f)
+                    .align(Alignment.Center)
+                    .clip(roundedShape),
+                bitmap = bitmap,
+                contentDescription = "Song cover"
+            )
+        }
     }
 }
 
@@ -106,7 +134,7 @@ private fun Vinyl(
 fun PreviewAnimatedVinyl() {
     MusicPlayerTheme {
         Surface {
-            AnimatedVinyl(painter = rememberVectorPainter(Icons.Outlined.MusicNote))
+            AnimatedVinyl()
         }
     }
 }

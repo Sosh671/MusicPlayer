@@ -2,14 +2,28 @@ package com.example.musicplayer.presentation.screens.player
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.musicplayer.data.model.Song
+import com.example.musicplayer._utils.MetadataRetriever
+import com.example.musicplayer.domain.model.Song
+import com.example.musicplayer.domain.usecase.ForwardSongUseCase
+import com.example.musicplayer.domain.usecase.FreePlaybackResourcesUseCase
+import com.example.musicplayer.domain.usecase.GetPlaybackStateUseCase
+import com.example.musicplayer.domain.usecase.PauseSongUseCase
+import com.example.musicplayer.domain.usecase.PlaySongUseCase
+import com.example.musicplayer.domain.usecase.ResumeSongUseCase
+import com.example.musicplayer.domain.usecase.RewindSongUseCase
+import com.example.musicplayer.domain.usecase.SeekSongToPositionUseCase
+import com.example.musicplayer.domain.usecase.SkipToNextSongUseCase
+import com.example.musicplayer.domain.usecase.SkipToPreviousSongUseCase
 import com.example.musicplayer.presentation.model.SongEvent
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.io.File
 
 private data class PlayerViewModelState(
     val isPlaying: Boolean = false,
@@ -29,12 +43,33 @@ private data class PlayerViewModelState(
     }
 }
 
-class PlayerSharedViewModel : ViewModel() {
+class PlayerSharedViewModel(
+    private val metadataRetriever: MetadataRetriever,
+    private val getPlaybackStateUseCase: GetPlaybackStateUseCase,
+    private val playSongUseCase: PlaySongUseCase,
+    private val pauseSongUseCase: PauseSongUseCase,
+    private val resumeSongUseCase: ResumeSongUseCase,
+    private val forwardSongUseCase: ForwardSongUseCase,
+    private val rewindSongUseCase: RewindSongUseCase,
+    private val skipToNextSongUseCase: SkipToNextSongUseCase,
+    private val skipToPreviousSongUseCase: SkipToPreviousSongUseCase,
+    private val seekSongToPositionUseCase: SeekSongToPositionUseCase,
+    private val freePlaybackResourcesUseCase: FreePlaybackResourcesUseCase
+) : ViewModel() {
 
-    private val viewModelState = MutableStateFlow(
-        PlayerViewModelState()
-    )
+    init {
+        viewModelScope.launch(Dispatchers.Main) {
+            getPlaybackStateUseCase().collect { newState ->
+                val position = newState.currentPositionMs
+                val isPlaying = newState.isPlaying
+                viewModelState.update {
+                    it.copy(currentPosition = position, isPlaying = isPlaying)
+                }
+            }
+        }
+    }
 
+    private val viewModelState = MutableStateFlow(PlayerViewModelState())
     val uiState = viewModelState
         .map(PlayerViewModelState::toUiState)
         .catch { exception ->
@@ -48,7 +83,46 @@ class PlayerSharedViewModel : ViewModel() {
             viewModelState.value.toUiState()
         )
 
-    fun onEvent(event: SongEvent) {
+    fun freePlaybackResources() = freePlaybackResourcesUseCase()
 
+    fun onEvent(event: SongEvent) {
+        when (event) {
+            is SongEvent.PlaySong -> playSong(event.file)
+            is SongEvent.PlayPauseSongToggle -> playPauseSongToggle()
+            is SongEvent.ForwardSong -> forwardSong()
+            is SongEvent.RewindSong -> rewindSong()
+            is SongEvent.SeekSongToPosition -> seekSongToPosition(event.position)
+            is SongEvent.SkipToNextSong -> skipToNextSong()
+            is SongEvent.SkipToPreviousSong -> skipToPreviousSong()
+        }
     }
+
+    private fun playSong(file: File) {
+        val song = metadataRetriever.parseFileMetadata(file) ?: return
+        viewModelState.update {
+            PlayerViewModelState(
+                isPlaying = true,
+                currentSong = song,
+                totalDuration = song.durationMs,
+                currentPosition = 0L
+            )
+        }
+        playSongUseCase(song)
+    }
+
+    private fun playPauseSongToggle() {
+        if (viewModelState.value.isPlaying) {
+            pauseSongUseCase()
+            viewModelState.update { it.copy(isPlaying = false) }
+        } else {
+            resumeSongUseCase()
+            viewModelState.update { it.copy(isPlaying = true) }
+        }
+    }
+
+    private fun forwardSong() = forwardSongUseCase()
+    private fun rewindSong() = rewindSongUseCase()
+    private fun skipToNextSong() = skipToNextSongUseCase()
+    private fun skipToPreviousSong() = skipToPreviousSongUseCase()
+    private fun seekSongToPosition(position: Long) = seekSongToPositionUseCase(position)
 }
