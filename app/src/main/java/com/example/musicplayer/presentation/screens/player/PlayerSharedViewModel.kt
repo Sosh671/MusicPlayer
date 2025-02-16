@@ -58,6 +58,7 @@ class PlayerSharedViewModel(
 ) : ViewModel() {
 
     init {
+        // todo check dispatcher
         viewModelScope.launch(Dispatchers.Main) {
             getPlaybackStateUseCase().collect { newState ->
                 val position = newState.currentPositionMs

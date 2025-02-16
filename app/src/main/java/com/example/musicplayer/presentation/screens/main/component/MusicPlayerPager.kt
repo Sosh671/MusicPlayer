@@ -10,12 +10,12 @@ import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Person
-import androidx.compose.material.icons.outlined.ShoppingCart
+import androidx.compose.material.icons.automirrored.filled.QueueMusic
+import androidx.compose.material.icons.automirrored.outlined.QueueMusic
+import androidx.compose.material.icons.filled.FolderOpen
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.outlined.FolderOpen
+import androidx.compose.material.icons.outlined.PlayArrow
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -99,18 +99,18 @@ fun PreviewMusicPlayerPager() {
                 paddings = PaddingValues(),
                 pages = listOf(
                     PagerScreen(
-                        unselectedIcon = Icons.Outlined.ShoppingCart,
-                        selectedIcon = Icons.Filled.ShoppingCart,
-                        screenContent = content
+                        unselectedIcon = Icons.Outlined.FolderOpen,
+                        selectedIcon = Icons.Filled.FolderOpen,
+                        screenContent = content,
                     ),
                     PagerScreen(
-                        unselectedIcon = Icons.Outlined.FavoriteBorder,
-                        selectedIcon = Icons.Filled.Favorite,
-                        screenContent = content
+                        unselectedIcon = Icons.Outlined.PlayArrow,
+                        selectedIcon = Icons.Filled.PlayArrow,
+                        screenContent = content,
                     ),
                     PagerScreen(
-                        unselectedIcon = Icons.Outlined.Person,
-                        selectedIcon = Icons.Filled.Person,
+                        unselectedIcon = Icons.AutoMirrored.Outlined.QueueMusic,
+                        selectedIcon = Icons.AutoMirrored.Filled.QueueMusic,
                         screenContent = content
                     )
                 )
