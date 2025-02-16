@@ -4,4 +4,5 @@
     <string name="screens_file_explorer_title">File Explorer</string>
     <string name="no_files_found">No files found</string>
     <string name="error_args">Error: %1$s</string>
+    <string name="please_choose_a_song">Please, choose a song to play on the file picker screen.</string>
 </resources>

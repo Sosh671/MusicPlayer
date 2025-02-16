@@ -32,8 +32,6 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalConfiguration
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextOverflow
@@ -78,20 +76,24 @@ fun PlayerScreen(viewModel: PlayerSharedViewModel = koinViewModel()) {
 
 @Composable
 private fun Empty() {
+    val body = stringResource(R.string.please_choose_a_song)
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = "No file found"
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyLarge,
+            text = body
         )
     }
 }
 
 @Composable
 private fun Error(message: String) {
+    val body = stringResource(R.string.error_args, message)
     Box(modifier = Modifier.fillMaxSize()) {
         Text(
-            modifier = Modifier.align(Alignment.Center),
-            text = "Error: $message"
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyLarge,
+            text = body
         )
     }
 }
@@ -119,12 +121,7 @@ fun SongScreenBody(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colorStops = colorStops,
-                    endY = LocalConfiguration.current.screenHeightDp.toFloat() * LocalDensity.current.density
-                )
-            )
+            .background(Brush.verticalGradient(colorStops = colorStops))
     ) {
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
             Box(modifier = Modifier.padding(vertical = 32.dp)) {
@@ -283,7 +280,7 @@ private fun PreviewPlayerScreenEmpty() {
 private fun PreviewPlayerScreenError() {
     MusicPlayerTheme {
         Surface {
-            Error(message = "Error loading file")
+            Error(message = "Error loading song")
         }
     }
 }
