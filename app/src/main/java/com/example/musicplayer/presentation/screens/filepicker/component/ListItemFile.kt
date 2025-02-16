@@ -5,16 +5,21 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Face
+import androidx.compose.material.icons.rounded.LibraryMusic
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.vector.rememberVectorPainter
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.example.musicplayer.presentation.theme.MusicPlayerTheme
 import java.io.File
 
 @Composable
@@ -39,11 +44,22 @@ fun ListItemFile(file: File, onClick: () -> Unit) {
         },
         leadingContent = {
             Image(
-                painter = rememberVectorPainter(Icons.Rounded.Face),
+                painter = rememberVectorPainter(Icons.Rounded.LibraryMusic),
                 contentDescription = "File icon",
+                colorFilter = ColorFilter.tint(Color.White),
                 modifier = Modifier
                     .size(40.dp)
                     .clip(CircleShape)
             )
         })
+}
+
+@Preview
+@Composable
+private fun ListItemFilePreview() {
+    MusicPlayerTheme {
+        Surface {
+            ListItemFile(File("song.mp3")) {}
+        }
+    }
 }
