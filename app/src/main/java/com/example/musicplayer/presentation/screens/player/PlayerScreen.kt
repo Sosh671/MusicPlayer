@@ -3,7 +3,6 @@ package com.example.musicplayer.presentation.screens.player
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.ProgressIndicatorDefaults
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Forward5
 import androidx.compose.material.icons.rounded.Replay5
@@ -22,7 +20,6 @@ import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Slider
-import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -46,6 +43,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.musicplayer.R
 import com.example.musicplayer.domain.model.Song
 import com.example.musicplayer.presentation._utils.toBitmap
+import com.example.musicplayer.presentation._utils.toGradientColors
 import com.example.musicplayer.presentation._utils.toTime
 import com.example.musicplayer.presentation.model.SongEvent
 import com.example.musicplayer.presentation.screens.player.component.AnimatedVinyl
@@ -111,28 +109,11 @@ fun SongScreenBody(
         if (isSongPlaying) R.drawable.ic_round_pause
         else R.drawable.ic_round_play
 
-    // todo remove dark mode
-    val gradientColors = if (isSystemInDarkTheme()) {
-        listOf(Color.Transparent, MaterialTheme.colorScheme.background)
-    } else {
-        listOf(MaterialTheme.colorScheme.background, MaterialTheme.colorScheme.background)
-    }
-
-    val sliderColors = if (isSystemInDarkTheme()) {
-        SliderDefaults.colors(
-            thumbColor = MaterialTheme.colorScheme.onBackground,
-            activeTrackColor = MaterialTheme.colorScheme.onBackground,
-            inactiveTrackColor = MaterialTheme.colorScheme.onBackground.copy(
-                alpha = ProgressIndicatorDefaults.IndicatorBackgroundOpacity
-            ),
-        )
-    } else SliderDefaults.colors(
-        thumbColor = Color.Transparent,
-        activeTrackColor = Color.Transparent,
-        inactiveTrackColor = Color.Transparent.copy(
-            alpha = ProgressIndicatorDefaults.IndicatorBackgroundOpacity
-        ),
+    val gradientColors = bitmap?.toGradientColors() ?: listOf(
+        Color.Transparent,
+        MaterialTheme.colorScheme.background
     )
+    val colorStops = listOf(0.0f to gradientColors[0], 0.8f to gradientColors[1]).toTypedArray()
     val defaultSubtitle = stringResource(R.string.unknown_artist)
 
     Box(
@@ -140,7 +121,7 @@ fun SongScreenBody(
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = gradientColors,
+                    colorStops = colorStops,
                     endY = LocalConfiguration.current.screenHeightDp.toFloat() * LocalDensity.current.density
                 )
             )
@@ -175,7 +156,6 @@ fun SongScreenBody(
                     .fillMaxWidth()
                     .padding(top = 24.dp),
                 valueRange = 0f..totalDuration.toFloat(),
-                colors = sliderColors,
                 onValueChange = { newPosition ->
                     onEvent(SongEvent.SeekSongToPosition(newPosition.toLong()))
                 },
