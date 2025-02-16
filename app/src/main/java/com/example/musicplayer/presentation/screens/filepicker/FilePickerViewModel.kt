@@ -48,7 +48,6 @@ class FilePickerViewModel(private val getFilesUseCase: GetFilesUseCase) : ViewMo
 
     private val rootDirectory = Environment.getExternalStorageDirectory()
     private var currentDirectory: File = rootDirectory
-    private var previousDirectory: File = rootDirectory
 
     init {
         val files = getFilesUseCase(rootDirectory)
@@ -63,7 +62,6 @@ class FilePickerViewModel(private val getFilesUseCase: GetFilesUseCase) : ViewMo
     }
 
     private fun changeDirectory(directory: File) {
-        previousDirectory = currentDirectory
         currentDirectory = directory
         val files = getFilesUseCase(directory)
         viewModelState.update { it.copy(files = files) }
@@ -73,6 +71,6 @@ class FilePickerViewModel(private val getFilesUseCase: GetFilesUseCase) : ViewMo
         if (currentDirectory == rootDirectory) {
             return
         }
-        changeDirectory(previousDirectory)
+        changeDirectory(currentDirectory.parentFile ?: rootDirectory)
     }
 }
