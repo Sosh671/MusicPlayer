@@ -51,7 +51,6 @@ class FilePickerViewModel(private val getFilesUseCase: GetFilesUseCase) : ViewMo
 
     init {
         val files = getFilesUseCase(rootDirectory)
-        // todo check if the state updates with the error message
         viewModelState.update { it.copy(files = files) }
     }
 

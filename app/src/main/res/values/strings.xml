@@ -3,4 +3,5 @@
     <string name="unknown_artist">Unknown artist</string>
     <string name="screens_file_explorer_title">File Explorer</string>
     <string name="no_files_found">No files found</string>
+    <string name="error_args">Error: %1$s</string>
 </resources>

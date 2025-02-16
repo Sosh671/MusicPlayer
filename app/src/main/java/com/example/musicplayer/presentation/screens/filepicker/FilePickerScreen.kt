@@ -87,7 +87,14 @@ private fun Empty() {
 
 @Composable
 private fun Error(message: String) {
-    Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
+    val body = stringResource(R.string.error_args, message)
+    Box(modifier = Modifier.fillMaxSize()) {
+        Text(
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyLarge,
+            text = body
+        )
+    }
 }
 
 @Composable
@@ -131,6 +138,16 @@ private fun FilePickerScreenEmptyPreview() {
     MusicPlayerTheme {
         Surface {
             Empty()
+        }
+    }
+}
+
+@Preview
+@Composable
+private fun FilePickerScreenErrorPreview() {
+    MusicPlayerTheme {
+        Surface {
+            Error("Error while loading files")
         }
     }
 }
