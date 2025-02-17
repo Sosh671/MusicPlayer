@@ -27,7 +27,7 @@ private data class FilePickerViewModelState(
     }
 }
 
-class FilePickerViewModel(private val getFilesUseCase: GetFilesUseCase) : ViewModel() {
+class FilePickerSharedViewModel(private val getFilesUseCase: GetFilesUseCase) : ViewModel() {
 
     private val viewModelState = MutableStateFlow(
         FilePickerViewModelState()
@@ -50,6 +50,10 @@ class FilePickerViewModel(private val getFilesUseCase: GetFilesUseCase) : ViewMo
     private var currentDirectory: File = rootDirectory
 
     init {
+        getFiles()
+    }
+
+    fun getFiles() {
         val files = getFilesUseCase(rootDirectory)
         viewModelState.update { it.copy(files = files) }
     }
