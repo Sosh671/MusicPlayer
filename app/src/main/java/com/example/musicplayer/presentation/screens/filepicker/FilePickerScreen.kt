@@ -37,7 +37,7 @@ import java.io.File
 fun FilePickerScreen(
     viewModel: FilePickerSharedViewModel = koinViewModel(),
     sharedViewModel: PlayerSharedViewModel = koinViewModel(),
-    onSongSelected: (File) -> Unit
+    navigateToPlayer: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val listState = rememberLazyListState()
@@ -60,10 +60,12 @@ fun FilePickerScreen(
             is FilePickerUiState.Success -> {
                 val filesInDirectory = (uiState as FilePickerUiState.Success).files
                 FilePickerList(filesInDirectory, listState) { file ->
-                    viewModel.selectFile(file)
                     if (file.isFile) {
-                        onSongSelected(file)
-                        sharedViewModel.onEvent(SongEvent.PlaySong(file))
+                        navigateToPlayer()
+                        val event = SongEvent.PlaySong(file, filesInDirectory)
+                        sharedViewModel.onEvent(event)
+                    } else {
+                        viewModel.changeDirectory(file)
                     }
                 }
             }

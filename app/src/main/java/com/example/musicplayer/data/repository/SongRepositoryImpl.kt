@@ -2,17 +2,16 @@ package com.example.musicplayer.data.repository
 
 import android.content.ComponentName
 import android.content.Context
-import android.net.Uri
 import androidx.annotation.OptIn
 import androidx.media3.common.MediaItem
-import androidx.media3.common.MediaMetadata
-import androidx.media3.common.MediaMetadata.PICTURE_TYPE_FRONT_COVER
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaController
 import androidx.media3.session.SessionToken
+import com.example.musicplayer.data.mapper.MediaItemMapper
 import com.example.musicplayer.data.model.PlaybackStateEntity
+import com.example.musicplayer.data.model.SongEntity
 import com.example.musicplayer.data.service.PlaybackService
 import com.example.musicplayer.domain.model.PlaybackState
 import com.example.musicplayer.domain.model.Song
@@ -39,12 +38,13 @@ const val REWIND_INTERVAL = 5000L
 class SongRepositoryImpl(
     context: Context,
     private val songMapper: SongMapper,
+    private val mediaItemMapper: MediaItemMapper,
     private val playbackStateMapper: PlaybackStateMapper
 ) : SongRepository, KoinComponent {
 
     private val player by inject<ExoPlayer>()
     private val playbackStateEntityFlow: MutableStateFlow<PlaybackStateEntity> =
-        MutableStateFlow(PlaybackStateEntity(0, false))
+        MutableStateFlow(PlaybackStateEntity(null, 0, false))
 
     private var mediaControllerFuture: ListenableFuture<MediaController>? = null
     private var job: Job? = null
@@ -56,19 +56,11 @@ class SongRepositoryImpl(
         mediaControllerFuture?.addListener({ observePlayer() }, MoreExecutors.directExecutor())
     }
 
-    override fun playSong(song: Song) {
-        val songEntity = songMapper.mapToEntity(song)
-        val uri = Uri.fromFile(songEntity.file)
-        val metadata = MediaMetadata.Builder().apply {
-            setTitle(songEntity.title)
-            setSubtitle(songEntity.subtitle)
-            setArtworkData(songEntity.albumCover, PICTURE_TYPE_FRONT_COVER)
-        }.build()
-        val mediaItem = MediaItem.Builder().apply {
-            setUri(uri)
-            setMediaMetadata(metadata)
-        }.build()
-        player.setMediaItem(mediaItem)
+    override fun playSong(startIndex: Int, queue: List<Song>) {
+        val startPosition = 0L
+        val songEntities: List<SongEntity> = queue.map(songMapper::mapToEntity)
+        val mediaItems: List<MediaItem> = songEntities.map(mediaItemMapper::mapToMediaItem)
+        player.setMediaItems(mediaItems, startIndex, startPosition)
         player.prepare()
         player.play()
     }
@@ -84,7 +76,10 @@ class SongRepositoryImpl(
                         while (isActive) {
                             val position = player.currentPosition
                             val isPlaying = player.isPlaying
-                            val state = PlaybackStateEntity(position, isPlaying)
+                            val song = player.currentMediaItem?.let {
+                                mediaItemMapper.mapToSongEntity(it)
+                            }
+                            val state = PlaybackStateEntity(song, position, isPlaying)
                             playbackStateEntityFlow.value = state
 
                             delay(POSITION_UPDATE_INTERVAL)
@@ -92,10 +87,12 @@ class SongRepositoryImpl(
                     }
                 } else if (playbackState == Player.STATE_ENDED) {
                     job?.cancel()
-
                     val position = player.mediaMetadata.durationMs ?: player.currentPosition
                     val isPlaying = player.isPlaying
-                    val state = PlaybackStateEntity(position, isPlaying)
+                    val song = player.currentMediaItem?.let {
+                        mediaItemMapper.mapToSongEntity(it)
+                    }
+                    val state = PlaybackStateEntity(song, position, isPlaying)
                     playbackStateEntityFlow.value = state
                 }
             }
@@ -122,11 +119,11 @@ class SongRepositoryImpl(
     override fun seekSongToPosition(position: Long) = player.seekTo(position)
 
     override fun skipToNextSong() {
-        // todo implement queue
+        player.seekToNext()
     }
 
     override fun skipToPreviousSong() {
-        // todo implement queue
+        player.seekToPrevious()
     }
 
     override fun getPlaybackState(): Flow<PlaybackState> =

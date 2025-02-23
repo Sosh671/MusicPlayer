@@ -1,6 +1,7 @@
 package com.example.musicplayer.presentation.screens.player
 
 import android.content.res.Configuration
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -23,7 +24,9 @@ import androidx.compose.material3.Slider
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -106,17 +109,21 @@ fun SongScreenBody(
     totalDuration: Long,
     onEvent: (SongEvent) -> Unit
 ) {
-    val bitmap = remember { song.albumCover?.toBitmap() }
+    val bitmap = remember { mutableStateOf(song.albumCover?.toBitmap()) }
     val iconResId =
         if (isSongPlaying) R.drawable.ic_round_pause
         else R.drawable.ic_round_play
 
-    val gradientColors = bitmap?.toGradientColors() ?: listOf(
+    val gradientColors = bitmap.value?.toGradientColors() ?: listOf(
         Color.Transparent,
         MaterialTheme.colorScheme.background
     )
     val colorStops = listOf(0.0f to gradientColors[0], 0.8f to gradientColors[1]).toTypedArray()
     val defaultSubtitle = stringResource(R.string.unknown_artist)
+
+    LaunchedEffect(song.albumCover) {
+        bitmap.value = song.albumCover?.toBitmap()
+    }
 
     Box(
         modifier = Modifier
@@ -125,7 +132,12 @@ fun SongScreenBody(
     ) {
         Column(modifier = Modifier.padding(horizontal = 24.dp)) {
             Box(modifier = Modifier.padding(vertical = 32.dp)) {
-                AnimatedVinyl(isSongPlaying = isSongPlaying, bitmap = bitmap?.asImageBitmap())
+                Crossfade(bitmap.value) { targetBitmap ->
+                    AnimatedVinyl(
+                        isSongPlaying = isSongPlaying,
+                        bitmap = targetBitmap?.asImageBitmap()
+                    )
+                }
             }
 
             Text(

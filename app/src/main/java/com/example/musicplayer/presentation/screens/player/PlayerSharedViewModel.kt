@@ -60,10 +60,11 @@ class PlayerSharedViewModel(
         // todo check dispatcher
         viewModelScope.launch(Dispatchers.Main) {
             getPlaybackStateUseCase().collect { newState ->
+                val song = newState.currentSong
                 val position = newState.currentPositionMs
                 val isPlaying = newState.isPlaying
                 viewModelState.update {
-                    it.copy(currentPosition = position, isPlaying = isPlaying)
+                    it.copy(currentSong = song, currentPosition = position, isPlaying = isPlaying)
                 }
             }
         }
@@ -82,7 +83,7 @@ class PlayerSharedViewModel(
 
     fun onEvent(event: SongEvent) {
         when (event) {
-            is SongEvent.PlaySong -> playSong(event.file)
+            is SongEvent.PlaySong -> playSong(event.file, event.queue)
             is SongEvent.PlayPauseSongToggle -> playPauseSongToggle()
             is SongEvent.ForwardSong -> forwardSong()
             is SongEvent.RewindSong -> rewindSong()
@@ -92,17 +93,25 @@ class PlayerSharedViewModel(
         }
     }
 
-    private fun playSong(file: File) {
-        val song = metadataRetriever.parseFileMetadata(file) ?: return
+    private fun playSong(file: File, queue: List<File>) {
+        val currentSong = metadataRetriever.parseFileMetadata(file)
+        val songQueue = queue.mapNotNull { metadataRetriever.parseFileMetadata(it) }
+        val startIndex = songQueue.indexOf(currentSong)
+        if (currentSong == null || startIndex == -1) {
+            viewModelState.update {
+                it.copy(errorMessage = "Failed to parse metadata for file: ${file.name}")
+            }
+            return
+        }
         viewModelState.update {
             PlayerViewModelState(
                 isPlaying = true,
-                currentSong = song,
-                totalDuration = song.durationMs,
+                currentSong = currentSong,
+                totalDuration = currentSong.durationMs,
                 currentPosition = 0L
             )
         }
-        playSongUseCase(song)
+        playSongUseCase(startIndex, songQueue)
     }
 
     private fun playPauseSongToggle() {

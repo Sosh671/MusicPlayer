@@ -52,13 +52,7 @@ class FilePickerSharedViewModel(private val getFilesUseCase: GetFilesUseCase) : 
         viewModelState.update { it.copy(files = files) }
     }
 
-    fun selectFile(file: File) {
-        if (file.isDirectory) {
-            changeDirectory(file)
-        }
-    }
-
-    private fun changeDirectory(directory: File) {
+    fun changeDirectory(directory: File) {
         currentDirectory = directory
         val files = getFilesUseCase(directory)
         viewModelState.update { it.copy(files = files) }

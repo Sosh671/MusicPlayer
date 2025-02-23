@@ -2,6 +2,7 @@ package com.example.musicplayer.di
 
 import androidx.media3.exoplayer.ExoPlayer
 import androidx.media3.session.MediaSession
+import com.example.musicplayer.data.mapper.MediaItemMapper
 import com.example.musicplayer.mappers.PlaybackStateMapper
 import com.example.musicplayer.mappers.SongMapper
 import com.example.musicplayer.data.repository.SongRepositoryImpl
@@ -29,10 +30,11 @@ val songModule = module {
 
     // Mapper
     factory { SongMapper() }
-    factory { PlaybackStateMapper() }
+    factory { PlaybackStateMapper(get()) }
+    factory { MediaItemMapper() }
 
     // Repository
-    single<SongRepository> { SongRepositoryImpl(androidContext(), get(), get()) }
+    single<SongRepository> { SongRepositoryImpl(androidContext(), get(), get(), get()) }
 
     // Use Case
     factory { PlaySongUseCase(get()) }

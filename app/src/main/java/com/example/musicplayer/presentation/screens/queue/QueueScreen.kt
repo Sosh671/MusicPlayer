@@ -29,7 +29,7 @@ import org.koin.androidx.compose.koinViewModel
 @Composable
 fun QueueScreen(
     viewModel: QueueViewModel = koinViewModel(),
-    onSongSelected: (Song) -> Unit
+    navigateToPlayer: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     val title = stringResource(R.string.screens_queue_explorer_title)

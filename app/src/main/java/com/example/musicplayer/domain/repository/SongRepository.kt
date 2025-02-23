@@ -6,7 +6,7 @@ import kotlinx.coroutines.flow.Flow
 
 interface SongRepository {
     fun getPlaybackState(): Flow<PlaybackState>
-    fun playSong(song: Song)
+    fun playSong(startIndex: Int, queue: List<Song>)
     fun resumeSong()
     fun pauseSong()
     fun forwardSong()

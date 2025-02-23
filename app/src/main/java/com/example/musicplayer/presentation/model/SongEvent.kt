@@ -8,6 +8,6 @@ sealed class SongEvent {
     data object SkipToPreviousSong : SongEvent()
     data object ForwardSong : SongEvent()
     data object RewindSong : SongEvent()
-    data class PlaySong(val file: File) : SongEvent()
+    data class PlaySong(val file: File, val queue: List<File>) : SongEvent()
     data class SeekSongToPosition(val position: Long) : SongEvent()
 }
