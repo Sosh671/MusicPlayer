@@ -3,6 +3,7 @@ package com.example.musicplayer
 import android.app.Application
 import com.example.musicplayer.di.filePickerModule
 import com.example.musicplayer.di.playerModule
+import com.example.musicplayer.di.queueModule
 import com.example.musicplayer.di.songModule
 import com.example.musicplayer.di.utilsModule
 import org.koin.android.ext.koin.androidContext
@@ -19,7 +20,8 @@ class MusicPlayerApplication : Application() {
                 utilsModule,
                 filePickerModule,
                 playerModule,
-                songModule
+                songModule,
+                queueModule
             )
         }
     }

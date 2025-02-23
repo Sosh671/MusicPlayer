@@ -5,4 +5,6 @@
     <string name="no_files_found">No files found</string>
     <string name="error_args">Error: %1$s</string>
     <string name="please_choose_a_song">Please, choose a song to play on the file picker screen.</string>
+    <string name="the_queue_is_empty">The current queue is empty.</string>
+    <string name="screens_queue_explorer_title">Queue</string>
 </resources>

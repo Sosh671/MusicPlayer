@@ -18,7 +18,6 @@ import com.example.musicplayer.presentation.model.SongEvent
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -73,11 +72,6 @@ class PlayerSharedViewModel(
     private val viewModelState = MutableStateFlow(PlayerViewModelState())
     val uiState = viewModelState
         .map(PlayerViewModelState::toUiState)
-        .catch { exception ->
-            viewModelState.update {
-                it.copy(errorMessage = exception.localizedMessage)
-            }
-        }
         .stateIn(
             viewModelScope,
             SharingStarted.Eagerly,

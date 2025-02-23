@@ -1,5 +1,6 @@
 package com.example.musicplayer.presentation.screens.main
 
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.QueueMusic
@@ -17,6 +18,7 @@ import com.example.musicplayer.presentation.screens.main.component.MusicPlayerPa
 import com.example.musicplayer.presentation.screens.player.PlayerScreen
 import com.example.musicplayer.presentation.screens.queue.QueueScreen
 import com.example.musicplayer.presentation.theme.MusicPlayerTheme
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
 @Composable
@@ -29,10 +31,7 @@ fun MusicPlayerApp() {
             selectedIcon = Icons.Filled.FolderOpen,
             screenContent = {
                 FilePickerScreen {
-                    scope.launch {
-                        // Navigate to the player screen
-                        pagerState.animateScrollToPage(1)
-                    }
+                    navigateToPlayerScreen(scope, pagerState)
                 }
             }),
         PagerScreen(
@@ -42,11 +41,19 @@ fun MusicPlayerApp() {
         PagerScreen(
             unselectedIcon = Icons.AutoMirrored.Outlined.QueueMusic,
             selectedIcon = Icons.AutoMirrored.Filled.QueueMusic,
-            screenContent = { QueueScreen() })
+            screenContent = {
+                QueueScreen {
+                    navigateToPlayerScreen(scope, pagerState)
+                }
+            })
     )
     MusicPlayerTheme {
         Scaffold { innerPadding ->
             MusicPlayerPager(pagerState, innerPadding, pagerScreens)
         }
     }
+}
+
+private fun navigateToPlayerScreen(scope: CoroutineScope, pagerState: PagerState) {
+    scope.launch { pagerState.animateScrollToPage(1) }
 }

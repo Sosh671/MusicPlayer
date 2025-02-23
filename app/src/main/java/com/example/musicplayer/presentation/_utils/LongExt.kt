@@ -5,7 +5,6 @@ import java.util.Locale
 fun Long.toTime(): String {
     val stringBuffer = StringBuffer()
 
-    // todo test hours
     val minutes = (this / 60000).toInt()
     val seconds = (this % 60000 / 1000).toInt()
 
