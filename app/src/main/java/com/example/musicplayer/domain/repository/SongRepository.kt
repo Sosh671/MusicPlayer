@@ -5,8 +5,11 @@ import com.example.musicplayer.domain.model.Song
 import kotlinx.coroutines.flow.Flow
 
 interface SongRepository {
-    fun getPlaybackState(): Flow<PlaybackState>
+    fun getCurrentQueueStream(): Flow<List<Song>>
+    fun getPlaybackStateStream(): Flow<PlaybackState>
+
     fun playSong(startIndex: Int, queue: List<Song>)
+    fun playSong(queueIndex: Int)
     fun resumeSong()
     fun pauseSong()
     fun forwardSong()

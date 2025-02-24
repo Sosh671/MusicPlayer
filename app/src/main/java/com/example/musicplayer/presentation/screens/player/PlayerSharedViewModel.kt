@@ -6,7 +6,7 @@ import com.example.musicplayer._utils.MetadataRetriever
 import com.example.musicplayer.domain.model.Song
 import com.example.musicplayer.domain.usecase.ForwardSongUseCase
 import com.example.musicplayer.domain.usecase.FreePlaybackResourcesUseCase
-import com.example.musicplayer.domain.usecase.GetPlaybackStateUseCase
+import com.example.musicplayer.domain.usecase.GetPlaybackStateStreamUseCase
 import com.example.musicplayer.domain.usecase.PauseSongUseCase
 import com.example.musicplayer.domain.usecase.PlaySongUseCase
 import com.example.musicplayer.domain.usecase.ResumeSongUseCase
@@ -44,7 +44,7 @@ private data class PlayerViewModelState(
 
 class PlayerSharedViewModel(
     private val metadataRetriever: MetadataRetriever,
-    private val getPlaybackStateUseCase: GetPlaybackStateUseCase,
+    private val getPlaybackStateStreamUseCase: GetPlaybackStateStreamUseCase,
     private val playSongUseCase: PlaySongUseCase,
     private val pauseSongUseCase: PauseSongUseCase,
     private val resumeSongUseCase: ResumeSongUseCase,
@@ -59,7 +59,7 @@ class PlayerSharedViewModel(
     init {
         // todo check dispatcher
         viewModelScope.launch(Dispatchers.Main) {
-            getPlaybackStateUseCase().collect { newState ->
+            getPlaybackStateStreamUseCase().collect { newState ->
                 val song = newState.currentSong
                 val position = newState.currentPositionMs
                 val isPlaying = newState.isPlaying

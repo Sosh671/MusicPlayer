@@ -43,6 +43,7 @@ class SongRepositoryImpl(
 ) : SongRepository, KoinComponent {
 
     private val player by inject<ExoPlayer>()
+    private val currentQueueFlow: MutableStateFlow<List<Song>> = MutableStateFlow(emptyList())
     private val playbackStateEntityFlow: MutableStateFlow<PlaybackStateEntity> =
         MutableStateFlow(PlaybackStateEntity(null, 0, false))
 
@@ -56,13 +57,23 @@ class SongRepositoryImpl(
         mediaControllerFuture?.addListener({ observePlayer() }, MoreExecutors.directExecutor())
     }
 
+    override fun getCurrentQueueStream(): Flow<List<Song>> = currentQueueFlow
+
+    override fun getPlaybackStateStream(): Flow<PlaybackState> =
+        playbackStateEntityFlow.map(playbackStateMapper::mapToDomain)
+
     override fun playSong(startIndex: Int, queue: List<Song>) {
         val startPosition = 0L
         val songEntities: List<SongEntity> = queue.map(songMapper::mapToEntity)
         val mediaItems: List<MediaItem> = songEntities.map(mediaItemMapper::mapToMediaItem)
+        currentQueueFlow.value = queue
         player.setMediaItems(mediaItems, startIndex, startPosition)
         player.prepare()
         player.play()
+    }
+
+    override fun playSong(queueIndex: Int) {
+        player.seekTo(queueIndex, 0)
     }
 
     private fun observePlayer() {
@@ -125,9 +136,6 @@ class SongRepositoryImpl(
     override fun skipToPreviousSong() {
         player.seekToPrevious()
     }
-
-    override fun getPlaybackState(): Flow<PlaybackState> =
-        playbackStateEntityFlow.map(playbackStateMapper::mapToDomain)
 
     override fun freeResources() {
         mediaControllerFuture?.let { MediaController.releaseFuture(it) }

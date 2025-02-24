@@ -9,7 +9,7 @@ val playerModule = module {
     viewModel {
         PlayerSharedViewModel(
             metadataRetriever = get(),
-            getPlaybackStateUseCase = get(),
+            getPlaybackStateStreamUseCase = get(),
             playSongUseCase = get(),
             pauseSongUseCase = get(),
             resumeSongUseCase = get(),

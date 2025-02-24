@@ -9,7 +9,7 @@ import com.example.musicplayer.data.repository.SongRepositoryImpl
 import com.example.musicplayer.domain.repository.SongRepository
 import com.example.musicplayer.domain.usecase.ForwardSongUseCase
 import com.example.musicplayer.domain.usecase.FreePlaybackResourcesUseCase
-import com.example.musicplayer.domain.usecase.GetPlaybackStateUseCase
+import com.example.musicplayer.domain.usecase.GetPlaybackStateStreamUseCase
 import com.example.musicplayer.domain.usecase.PauseSongUseCase
 import com.example.musicplayer.domain.usecase.PlaySongUseCase
 import com.example.musicplayer.domain.usecase.ResumeSongUseCase
@@ -40,7 +40,7 @@ val songModule = module {
     factory { PlaySongUseCase(get()) }
     factory { PauseSongUseCase(get()) }
     factory { ResumeSongUseCase(get()) }
-    factory { GetPlaybackStateUseCase(get()) }
+    factory { GetPlaybackStateStreamUseCase(get()) }
     factory { ForwardSongUseCase(get()) }
     factory { RewindSongUseCase(get()) }
     factory { SkipToNextSongUseCase(get()) }

@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -22,6 +22,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.musicplayer.R
 import com.example.musicplayer.domain.model.Song
 import com.example.musicplayer.presentation.screens.queue.component.ListItemQueue
+import com.example.musicplayer.presentation.screens.queue.component.ListItemQueueCurrent
 import com.example.musicplayer.presentation.theme.MusicPlayerTheme
 import org.koin.androidx.compose.koinViewModel
 
@@ -49,8 +50,8 @@ fun QueueScreen(
 
             is QueueUiState.Success -> {
                 val state = uiState as? QueueUiState.Success ?: return@Column
-                QueueList(state.songs) { song ->
-
+                QueueList(state.songs, state.currentSongIndex) { index ->
+                    viewModel.playSong(index)
                 }
             }
         }
@@ -82,11 +83,17 @@ private fun Error(message: String) {
 }
 
 @Composable
-private fun QueueList(songs: List<Song>, onClick: (Song) -> Unit) {
+private fun QueueList(songs: List<Song>, currentSongIndex: Int, onClick: (Int) -> Unit) {
     LazyColumn(modifier = Modifier.fillMaxSize()) {
-        items(songs) { song ->
-            ListItemQueue(song) {
-                onClick(song)
+        itemsIndexed(songs) { index, song ->
+            if (index == currentSongIndex) {
+                ListItemQueueCurrent(song) {
+                    onClick(index)
+                }
+            } else {
+                ListItemQueue(song) {
+                    onClick(index)
+                }
             }
         }
     }
@@ -108,7 +115,7 @@ private fun QueueScreenPreview() {
                         Text("Queue", fontSize = 20.sp)
                     }
                 )
-                QueueList(songs) {}
+                QueueList(songs, 0) {}
             }
         }
     }
