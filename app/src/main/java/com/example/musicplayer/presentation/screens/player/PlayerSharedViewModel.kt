@@ -24,6 +24,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.io.File
 
+// todo review complex object passing
 private data class PlayerViewModelState(
     val isPlaying: Boolean = false,
     val currentSong: Song? = null,
@@ -62,9 +63,14 @@ class PlayerSharedViewModel(
             getPlaybackStateStreamUseCase().collect { newState ->
                 val song = newState.currentSong
                 val position = newState.currentPositionMs
+                val duration = newState.currentSong?.durationMs ?: 0L
                 val isPlaying = newState.isPlaying
                 viewModelState.update {
-                    it.copy(currentSong = song, currentPosition = position, isPlaying = isPlaying)
+                    it.copy(
+                        currentSong = song,
+                        currentPosition = position,
+                        totalDuration = duration,
+                        isPlaying = isPlaying)
                 }
             }
         }
