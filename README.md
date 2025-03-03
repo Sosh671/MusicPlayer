@@ -1,11 +1,8 @@
-# Project is work in progress
-# プロジェクトは進行中です
+# MusicPlayer
 
 <img src="https://github.com/user-attachments/assets/9ba954a0-ebff-42f8-9088-f361aee93f23" width="300">
 <img src="https://github.com/user-attachments/assets/e1fbb956-ab84-4663-88d4-5cc69285223b" width="300">
 <img src="https://github.com/user-attachments/assets/5515a3bb-81a3-48a0-8e54-0c2b24fad808" width="300">
-
-# MusicPlayer
 
 A simple Android music player built using **Media3**, **Jetpack Compose**, **Kotlin**, and **Koin**. This app allows users to play music tracks, browse songs, and manage playback with a modern, native Android UI.
 
